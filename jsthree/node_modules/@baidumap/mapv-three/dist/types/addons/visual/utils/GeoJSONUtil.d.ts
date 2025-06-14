@@ -1,0 +1,10 @@
+export function getGeoJSONType(feature?: {}): any;
+export function isGeoJSON(feature?: {}): boolean;
+export function isGeoJSONPolygon(feature?: {}): boolean;
+export function isGeoJSONLine(feature?: {}): boolean;
+export function isGeoJSONPoint(feature?: {}): boolean;
+export function isGeoJSONMulti(feature?: {}): boolean;
+export function getGeoJSONCoordinates(feature?: {}): any;
+export function getGeoJSONCenter(feature?: {}): number[] | null;
+export function computeCenter(coords: any): number[];
+export function spliteGeoJSONMulti(feature?: {}): {}[] | null;
