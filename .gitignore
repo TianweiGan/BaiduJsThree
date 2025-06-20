@@ -3,6 +3,7 @@ earth/node_modules
 weather/node_modules
 scene/node_modules
 route/node_modules
+satellite/node_modules
 
 # 忽略打包输出的mapvthree静态资源
 jsthree/dist/mapvthree/
@@ -10,6 +11,7 @@ earth/dist/mapvthree/
 weather/dist/mapvthree/
 scene/dist/mapvthree/
 route/dist/mapvthree/
+satellite/dist/mapvthree/
 
 # 忽略自定义模型
 scene/models/
