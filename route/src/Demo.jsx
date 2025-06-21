@@ -6,13 +6,13 @@ const Demo = () => {
     const ref = useRef();
 
     useEffect(() => {
-        mapvthree.BaiduMapConfig.ak = '您的AK';
+        mapvthree.BaiduMapConfig.ak = 'a2XkTGoOtUZoA03439QtWYQBs5skl8My';
 
         const engine = new mapvthree.Engine(ref.current, {
             map: {
                 provider: new mapvthree.BaiduVectorTileProvider(),
                 projection: 'ECEF',
-                center: [116.327824, 39.901484],
+                center: [104.049392, 30.648245],
                 heading: 40,
                 pitch: 60,
                 range: 2000,
@@ -45,7 +45,7 @@ const Demo = () => {
             }));
         
         async function loadData() {
-            const dataSource = await mapvthree.GeoJSONDataSource.fromURL('data/route.geojson');
+            const dataSource = await mapvthree.GeoJSONDataSource.fromURL('data/heart.geojson');
             flyline.dataSource = dataSource;
             line.dataSource = dataSource;
         }
