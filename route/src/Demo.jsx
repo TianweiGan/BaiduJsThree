@@ -6,7 +6,7 @@ const Demo = () => {
     const ref = useRef();
 
     useEffect(() => {
-        mapvthree.BaiduMapConfig.ak = 'a2XkTGoOtUZoA03439QtWYQBs5skl8My';
+        mapvthree.BaiduMapConfig.ak = '您的AK';
 
         const engine = new mapvthree.Engine(ref.current, {
             map: {
