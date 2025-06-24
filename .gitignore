@@ -6,6 +6,7 @@ route/node_modules
 satellite/node_modules
 control/node_modules
 wall/node_modules
+climb/node_modules
 
 # 忽略打包输出的mapvthree静态资源
 jsthree/dist/mapvthree/
@@ -16,6 +17,7 @@ route/dist/mapvthree/
 satellite/dist/mapvthree/
 control/dist/mapvthree/
 wall/dist/mapvthree/
+climb/dist/mapvthree/
 
 # 忽略自定义模型
 scene/models/
