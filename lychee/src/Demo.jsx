@@ -55,9 +55,9 @@ const Demo = () => {
         let currentPointIndex = 0;
         let coords;
         let progress = 0;
-        const MOVEMENT_SPEED = 100;     // 移动速度
-        const CAMERA_DISTANCE = 70;    // 后方距离
-        const CAMERA_HEIGHT = 50;      // 相机高度
+        const MOVEMENT_SPEED = 300;     // 移动速度
+        const CAMERA_DISTANCE = 50;    // 后方距离
+        const CAMERA_HEIGHT = 30;      // 相机高度
         const CAMERA_OFFSET = 0;       // 相机水平偏移
         const CAMERA_SMOOTH = 0.05;    // 相机平滑系数
         const MAX_DELTA_TIME = 0.05;   // 最大时间步长（秒）
@@ -69,7 +69,7 @@ const Demo = () => {
         
         let mixer; // 动画混合器
         let model; // 3D模型
-        const modelScale = 2; // 模型缩放比例
+        const modelScale = 5; // 模型缩放比例
         
         // 加载3D模型
         const loader = new GLTFLoader();
