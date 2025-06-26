@@ -54,6 +54,18 @@ module.exports = {
                     },
                 },
             },
+            {
+                test: /\.(glb|gltf)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: 'models/'
+                        }
+                    }
+                ]
+            },
             // 可根据需要添加loader配置
         ],
     },
