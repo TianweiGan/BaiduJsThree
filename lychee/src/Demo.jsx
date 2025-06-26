@@ -9,8 +9,8 @@ const Demo = () => {
     const [mapType, setMapType] = useState('satellite');
 
     useEffect(() => {
-        mapvthree.BaiduMapConfig.ak = 'a2XkTGoOtUZoA03439QtWYQBs5skl8My';
-        mapvthree.CesiumConfig.accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0ZWY3Yjk2Ny02MWZlLTQ5ZmQtYTgwZi00NzdiYWQ1NjgyZWEiLCJpZCI6MzE1MDY1LCJpYXQiOjE3NTA3NDU5OTF9.0iYwpAWe3_2FkAokyfc1goxXE_Rs6-OwIDJCA1Y7dH0';
+        mapvthree.BaiduMapConfig.ak = '您的AK';
+        mapvthree.CesiumConfig.accessToken = '您的AK';
 
         const engine = new mapvthree.Engine(ref.current, {
             map: {
