@@ -3,10 +3,11 @@ import * as mapvthree from '@baidumap/mapv-three';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import runningManModel from '../public/models/running_man.glb';
+import * as Cesium from 'cesium';
 
 const Demo = () => {
     const ref = useRef();
-    const [mapType, setMapType] = useState('satellite');
+    // const [mapType, setMapType] = useState('satellite');
 
     useEffect(() => {
         mapvthree.BaiduMapConfig.ak = '您的AK';
@@ -14,32 +15,40 @@ const Demo = () => {
 
         const engine = new mapvthree.Engine(ref.current, {
             map: {
-                provider: mapType === 'satellite' ? new mapvthree.BingImageryTileProvider() : new mapvthree.BaiduVectorTileProvider(),
-                center: [113.27143, 23.13534],
-                heading: 30,
+                // provider: mapType === 'satellite' ? new mapvthree.BingImageryTileProvider() : new mapvthree.BaiduVectorTileProvider(),
+                provider: null,
+                center: [113.27345, 23.13538],
+                heading: 0,
                 pitch: 60,  // 增加俯仰角以更好地观察地形
                 range: 2000,
-                projection: 'EPSG:3857',
+                projection: 'EPSG:4326',
             },
             rendering: {
                 enableAnimationLoop: true,
             },
         });
-/*
-        let mapView = engine.add(new mapvthree.MapView({
-            terrainProvider: new mapvthree.CesiumTerrainTileProvider(),
-            imageryProvider: new mapvthree.BingImageryTileProvider(),
+
+        let terrain = new mapvthree.CesiumTerrainTileProvider();
+        let imagery = new mapvthree.BingImageryTileProvider();
+        let vector = new mapvthree.BaiduVectorTileProvider();
+        engine.add(new mapvthree.MapView({
+            terrainProvider: terrain,
+            imageryProvider: imagery,
+            vectorProvider: null,
         }));
-*/
+        console.log('terrainProvider:', terrain);
+        console.log('imageryProvider:', imagery);
+        console.log('vectorProvider:', vector);
+
         const line = engine.add(new mapvthree.FatLine({
-            lineWidth: 6,
+            lineWidth: 10,
             keepSize: true,
             color: '#87CEFA',
         }));
         
         const flyline = engine.add(new mapvthree.FatLine({
             color: '#ff0000',
-            lineWidth: 6,
+            lineWidth: 10,
             keepSize: true,
             lineCap: 'round', 
             enableAnimation: true,
@@ -56,8 +65,8 @@ const Demo = () => {
         let coords;
         let progress = 0;
         const MOVEMENT_SPEED = 300;     // 移动速度
-        const CAMERA_DISTANCE = 50;    // 后方距离
-        const CAMERA_HEIGHT = 30;      // 相机高度
+        const CAMERA_DISTANCE = 500;    // 后方距离
+        const CAMERA_HEIGHT = 300;      // 相机高度
         const CAMERA_OFFSET = 0;       // 相机水平偏移
         const CAMERA_SMOOTH = 0.05;    // 相机平滑系数
         const MAX_DELTA_TIME = 0.05;   // 最大时间步长（秒）
@@ -69,7 +78,9 @@ const Demo = () => {
         
         let mixer; // 动画混合器
         let model; // 3D模型
-        const modelScale = 5; // 模型缩放比例
+        const modelScale = 20; // 模型缩放比例
+        const map_bias_x = 0.0118; // 经度偏移
+        const map_bias_y = 0.0028; // 纬度偏移
         
         // 加载3D模型
         const loader = new GLTFLoader();
@@ -124,12 +135,14 @@ const Demo = () => {
                 const progressDelta = Math.min((MOVEMENT_SPEED * deltaTime) / distance, 0.1);
                 progress += progressDelta;
                 
-                // 计算目标位置
                 const targetX = currentPosOutput[0] + (nextPosOutput[0] - currentPosOutput[0]) * progress;
                 const targetY = currentPosOutput[1] + (nextPosOutput[1] - currentPosOutput[1]) * progress;
-                const baseZ = currentPosOutput[2];
                 
-                // 计算目标角度
+                // 使用真实高程数据进行插值
+                const currentHeight = coords[currentPointIndex][2];
+                const nextHeight = coords[nextIndex][2];
+                const targetZ = currentHeight + (nextHeight - currentHeight) * progress;
+                
                 const direction = new THREE.Vector3(
                     nextPosOutput[0] - currentPosOutput[0],
                     nextPosOutput[1] - currentPosOutput[1],
@@ -137,16 +150,14 @@ const Demo = () => {
                 ).normalize();
                 const targetAngle = Math.atan2(direction.y, direction.x) + Math.PI / 2;
                 
-                // 平滑插值到新位置和角度
                 if (lastModelPos.x === 0 && lastModelPos.y === 0 && lastModelPos.z === 0) {
-                    lastModelPos.set(targetX, targetY, baseZ);
+                    lastModelPos.set(targetX, targetY, targetZ);
                     lastModelAngle = targetAngle;
                 } else {
                     lastModelPos.x += (targetX - lastModelPos.x) * 0.1;
                     lastModelPos.y += (targetY - lastModelPos.y) * 0.1;
-                    lastModelPos.z = baseZ;
+                    lastModelPos.z = targetZ;
                     
-                    // 处理角度插值，考虑角度的循环性
                     let angleDiff = targetAngle - lastModelAngle;
                     if (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
                     if (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
@@ -154,14 +165,12 @@ const Demo = () => {
                 }
                 
                 if (model) {
-                    // 应用平滑后的位置和角度
                     model.position.copy(lastModelPos);
                     model.rotation.set(0, 0, 0);
                     model.rotateZ(lastModelAngle);
                     model.rotateX(Math.PI / 2);
                 }
 
-                // 使用平滑后的位置计算相机位置
                 const targetCameraPos = new THREE.Vector3(
                     lastModelPos.x - direction.x * CAMERA_DISTANCE + direction.y * CAMERA_OFFSET,
                     lastModelPos.y - direction.y * CAMERA_DISTANCE - direction.x * CAMERA_OFFSET,
@@ -178,7 +187,6 @@ const Demo = () => {
                 engine.camera.lookAt(lastModelPos.x, lastModelPos.y, lastModelPos.z + 5);
                 engine.camera.up.set(0, 0, 1);
                 
-                // 当进度达到1时，移动到下一个点
                 if (progress >= 1) {
                     progress = 0;
                     currentPointIndex = nextIndex;
@@ -189,17 +197,42 @@ const Demo = () => {
 
         async function loadData() {
             try {
-                const dataSource = await mapvthree.GeoJSONDataSource.fromURL('data/lychee.geojson');
+                // 读取geojson文件
+                const response = await fetch('data/lychee.geojson');
+                const geojsonData = await response.json();
+
+                // 设定高程
+                const terrainProvider = await Cesium.createWorldTerrainAsync();
+                // 将坐标转换为Cartographic对象列表
+                const positions = geojsonData.features[0].geometry.coordinates.map(coord => 
+                    Cesium.Cartographic.fromDegrees(coord[0], coord[1])
+                );
+                try {
+                    const updatedPositions = await Cesium.sampleTerrainMostDetailed(terrainProvider, positions, true);
+                    // 更新geojson中的坐标，添加高程信息
+                    geojsonData.features[0].geometry.coordinates = geojsonData.features[0].geometry.coordinates.map((coord, index) => {
+                        return [coord[0]- map_bias_x, coord[1]- map_bias_y, updatedPositions[index].height + 25];
+                    });
+                    console.log(geojsonData.features[0].geometry.coordinates);
+                }
+                catch (error) {
+                    console.error('Error sampling terrain:', error);
+                }
+
+                // 使用修改后的geojson数据创建数据源
+                const dataSource = mapvthree.GeoJSONDataSource.fromGeoJSON(geojsonData);
                 flyline.dataSource = dataSource;
                 line.dataSource = dataSource;
 
-                // 获取路线数据
-                const response = await fetch('data/lychee.geojson');
-                const json = await response.json();
-                coords = json.features[0].geometry.coordinates;
-                
-                // 开始动画
-                animate();
+                // 保存坐标数据用于动画
+                coords = geojsonData.features[0].geometry.coordinates;
+
+                // 延时2秒后开始动画，等待底图渲染
+                console.log('等待2秒让底图渲染...');
+                setTimeout(() => {
+                    console.log('开始动画');
+                    animate();
+                }, 3000);
             } catch (error) {
                 console.error('Error loading data:', error);
             }
@@ -216,36 +249,10 @@ const Demo = () => {
             }
             engine.dispose();
         };
-    }, [mapType]);
+    }, []);
 
     return (
-        <>
-            <div style={{
-                position: 'absolute',
-                top: '20px',
-                right: '20px',
-                zIndex: 1000,
-                background: 'white',
-                padding: '10px',
-                borderRadius: '4px',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-            }}>
-                <button 
-                    onClick={() => setMapType(mapType === 'satellite' ? 'vector' : 'satellite')}
-                    style={{
-                        padding: '8px 16px',
-                        fontSize: '14px',
-                        cursor: 'pointer',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        background: 'white'
-                    }}
-                >
-                    切换到{mapType === 'satellite' ? '矢量图' : '卫星图'}
-                </button>
-            </div>
             <div ref={ref} style={{ width: '100vw', height: '100vh', position: 'fixed', left: 0, top: 0 }} />
-        </>
     );
 };
 
