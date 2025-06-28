@@ -1,85 +1,37 @@
-# MCP+JS实现动态路线规划+视角跟随
+# <百度地图MCP>路线规划+<百度地图JS API Three>三维动态可视化
 
-## 项目简介
-本项目基于 MCP + React + @baidumap/mapv-three + Three.js + Cesium 实现了广州到从化的路线规划并进行3D可视化展示。项目支持Bing卫星地图 + Cesium 真实地形底图，使用3D人物模型沿路线动态移动，并使相机跟随进行视角跟随。
+## 前言
 
-## 效果展示
-![image1](image/image1.png)
+本项目创新性地结合百度地图MCP路线规划能力与百度地图JS API Three的可视化能力，构建了一个路线规划可视化案例，并用广州到从化为例进行展示。案例使用大语言模型结合MCP完成了路线规划，并用JS完成了动态的3D地图线路可视化，支持卫星地图、真是地形、路径飞线、3D人物移动以及相机视角跟随。
+
+## 案例效果
+小红书视频：
+- [三维卫星地图动态路线规划，来啦！](https://www.xiaohongshu.com/discovery/item/685e6047000000001202c307?source=webshare&xhsshare=pc_web&xsec_token=ABesE6GAzuhtBTIJt-rsEaAa8lUEU1ZAB2AeP8uSLBJRs=&xsec_source=pc_share)
+- [地图MCP+JS|一站式完成路线规划加可视化](https://www.xiaohongshu.com/discovery/item/685d1f10000000001203ff7c?source=webshare&xhsshare=pc_web&xsec_token=AByAOy1N7nAhx-ldF_0OsDyraoi2XgE2NY4g7FZ3ORTmE=&xsec_source=pc_share)
+- [当一回荔枝使|地图MCP还原《长安的荔枝》](https://www.xiaohongshu.com/discovery/item/685bc42f0000000023007ba9?source=webshare&xhsshare=pc_web&xsec_token=ABHHv4-jassjnpusfZUX1FMQ49o1NRle8bWcGZPJE-xsg=&xsec_source=pc_share)
+- [用JS API和MCP在网页地图上画爱心！](https://www.xiaohongshu.com/discovery/item/68591eb8000000002400a22a?source=webshare&xhsshare=pc_web&xsec_token=ABktfgK8PEldAoBkpiwmCslsmQsny-VWnT8Ld4forqrIk=&xsec_source=pc_share)
+- [地图MCP+JS API=可视化旅游攻略！](https://www.xiaohongshu.com/discovery/item/6853da36000000002300714b?source=webshare&xhsshare=pc_web&xsec_token=ABc5TKUEsmNYzqlkmpQvCiDAmqBFy4D0WF9bbYGd6AQeo=&xsec_source=pc_share)
 
 ## 相关技术
+
+- 百度地图MCP
+- 百度地图JS API Three
 - JavaScript
 - React
-- @baidumap/mapv-three（百度地图JS API Three）
-- Cesium（提供地形服务）
-- 百度地图 MCP Server 
+- Three.js
+- Cesium
 
-## 目录结构
-```
-lychee/
-├── data/
-│   └── lychee.geojson     # 路线地理数据
-├── public/
-│   └── models/
-│       └── running_man.glb # 3D人物模型
-├── src/
-│   ├── Demo.jsx           # 主要展示组件
-│   └── index.js           # 入口文件
-├── webpack.config.js      # 构建配置
-├── package.json          # 项目依赖
-└── README.md             # 项目说明
-```
-
-## 快速开始
-### 依赖安装
-```bash
-# 百度地图JS API Three 和 React相关
-npm install --save @baidumap/mapv-three three react react-dom
-# webpack相关
-npm install --save-dev webpack webpack-cli copy-webpack-plugin html-webpack-plugin @babel/core @babel/preset-env @babel/preset-react babel-loader
-# Cesium 相关
-npm install cesium
-```
-
-### 构建与运行
-```bash
-npx webpack
-npx serve dist
-```
-
-## 关键技术细节
-### webpack配置``
-```js
-    plugins: [
-        new CopyWebpackPlugin({
-            patterns: [
-                {
-                    from: path.resolve(__dirname, 'node_modules/@baidumap/mapv-three/dist/assets'),
-                    to: 'mapvthree/assets',
-                },
-                {
-                    from: path.resolve(__dirname, 'data'),
-                    to: 'data',
-                },
-            ],
-        })]
-```
-
-### 入口文件`src/index.js`
-```js
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import Demo from './Demo';
-
-const root = createRoot(document.getElementById('container'));
-root.render(<Demo />);
-```
+## 技术实现
 
 ### MCP路径规划
-现在Cursor或其他平台使用百度地图MCP进行路线规划。
-要求：路线详细+真实（路线在道路上）+将路线写入`data/lychee.geojson`文件中
-配置AK：[百度MCP API文档](https://lbsyun.baidu.com/faq/api?title=mcpserver/base)
+
+先在Cursor或其他平台使用百度地图MCP进行路线规划。
+要求：路线详细+真实（路线在道路上+将路线写入`data/lychee.geojson`文件中
+配置AK：
+[百度MCP API文档](https://lbsyun.baidu.com/faq/api?title=mcpserver/base)
 
 ### 数据文件`data/lychee.geojson`
+
 类似这样的结构，coordinates为路线
 ```json
 {
@@ -104,12 +56,16 @@ root.render(<Demo />);
 
 ```
 
-### 核心组件`src/Demo.jsx`
-#### AK配置
-需要使用百度地图JS API Three以及Cesium的AK，注意百度地图使用浏览器端AK
-AK获取：[百度地图开放平台](https://lbsyun.baidu.com/)、[Cesium官网](https://ion.cesium.com/)
+### AK配置
 
-#### 引擎与底图
+需要使用百度地图MCP、百度地图JS API Three以及Cesium的AK
+AK获取：
+- [百度地图开放平台](https://lbsyun.baidu.com/)
+- [Cesium官网](https://ion.cesium.com/)
+
+
+### 引擎与底图
+
 初始化底图引擎，使用卫星+真实地形底图（BingImageryTileProvider + CesiumTerrainTileProvider）
 ```js
        const engine = new mapvthree.Engine(ref.current, {
@@ -138,7 +94,8 @@ AK获取：[百度地图开放平台](https://lbsyun.baidu.com/)、[Cesium官网
         console.log('vectorProvider:', vector);
 ```
 
-#### 飞线设置
+### 飞线设置
+
 对地图飞线进行设置
 ```js
         const line = engine.add(new mapvthree.FatLine({
@@ -162,7 +119,8 @@ AK获取：[百度地图开放平台](https://lbsyun.baidu.com/)、[Cesium官网
         }));
 ```
 
-#### 3D人物模型加载
+### 3D人物模型加载
+
 加载动态3D人物模型，需要提前将模型放入`public/models/running_man.glb`
 ```js
         const loader = new GLTFLoader();
@@ -194,7 +152,8 @@ AK获取：[百度地图开放平台](https://lbsyun.baidu.com/)、[Cesium官网
         });
 ```
 
-#### 动画设置
+### 动画设置
+
 创建动画，包括人物移动平滑、相机跟随、相机平滑等操作
 ```js
         function animate() {
@@ -282,7 +241,8 @@ AK获取：[百度地图开放平台](https://lbsyun.baidu.com/)、[Cesium官网
         }
 ```
 
-#### 数据加载
+### 数据加载
+
 加载`data/lychee.geojson`中的数据，绘制飞线、调用动画
 ```js
         async function loadData() {
@@ -331,7 +291,8 @@ AK获取：[百度地图开放平台](https://lbsyun.baidu.com/)、[Cesium官网
         loadData();
 ```
 
-#### 释放资源
+### 释放资源
+
 ```js
         return () => {
             if (animationFrameId) {
@@ -344,22 +305,11 @@ AK获取：[百度地图开放平台](https://lbsyun.baidu.com/)、[Cesium官网
         };
 ```
 
-#### 一些参数设置
-```js
-        const MOVEMENT_SPEED = 300;     // 移动速度
-        const CAMERA_DISTANCE = 500;    // 后方距离
-        const CAMERA_HEIGHT = 300;      // 相机高度
-        const CAMERA_OFFSET = 0;       // 相机水平偏移
-        const CAMERA_SMOOTH = 0.05;    // 相机平滑系数
-        const MAX_DELTA_TIME = 0.05;   // 最大时间步长
-        const modelScale = 20; // 模型缩放比例
-        const map_bias_x = 0.0118; // 经度偏移
-        const map_bias_y = 0.0028; // 纬度偏移
-
-```
-
 ## 参考资料
 - [百度地图开放平台](https://lbsyun.baidu.com/)
 - [JS API Three官方文档](https://lbsyun.baidu.com/faq/api?title=jsapithree)
 - [百度MCP API文档](https://lbsyun.baidu.com/faq/api?title=mcpserver/base)
 - [Cesium开发文档](https://cesium.com/learn/cesiumjs-learn/cesiumjs-quickstart/)
+
+## 代码
+- [[Cesium开发文档](https://github.com/TianweiGan/BaiduJsThree/tree/master/lychee)](https://github.com/TianweiGan/BaiduJsThree/tree/master/lychee)
