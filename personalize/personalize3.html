@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>个性化地图</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <style>
+    body,
+    html,
+    #container {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        font-family: "微软雅黑";
+    }
+    .info {
+        z-index: 999;
+        width: auto;
+        min-width: 22rem;
+        padding: .75rem 1.25rem;
+        margin-left: 1.25rem;
+        position: fixed;
+        top: 1rem;
+        background-color: #fff;
+        border-radius: .25rem;
+        font-size: 14px;
+        color: #666;
+        box-shadow: 0 2px 6px 0 rgba(27, 142, 236, 0.5);
+    }
+    </style>
+    <script src="https://api.map.baidu.com/api?type=webgl&v=1.0&ak=您的AK"></script>
+</head>
+<body>
+    <div class = "info">
+        <p>个性化底图v2样式可以通过 <a href='https://lbsyun.baidu.com/customv2/help.html' target="_blank">个性化在线编辑器</a> 自由编辑获取~</p>
+    </div>
+    <div id="container"></div>
+    <script>
+        // 等待API加载完成
+        window.onload = function() {
+            var map = new BMapGL.Map('container');
+            map.centerAndZoom(new BMapGL.Point(116.404, 39.915), 11);
+            map.enableScrollWheelZoom(true);
+            
+            // 设置地图样式
+            map.setMapStyleV2({     
+                styleId: 'bcbdaea700a968d15d0e1ae7b34bc990'
+            });
+            
+            // 隐藏室内图
+            map.setDisplayOptions({
+                indoor: false
+            });
+        }
+    </script>
+</body>
+</html>
