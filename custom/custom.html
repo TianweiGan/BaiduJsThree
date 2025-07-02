@@ -64,6 +64,10 @@
 </html>
 <script>
     var map = new BMapGL.Map('container');
+    // 设置地图样式
+    map.setMapStyleV2({     
+        styleId: 'e73e64bbe733810a901064332f09c1e9'
+    });
     var point = new BMapGL.Point(116.41869196404, 39.901641043953); 
     map.centerAndZoom(point, 14);
     map.enableScrollWheelZoom();
